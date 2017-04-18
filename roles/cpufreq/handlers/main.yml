@@ -1,0 +1,7 @@
+---
+
+- name: cpufrequutils restart
+  service: 
+    name: cpufrequtils 
+    state: restarted
+

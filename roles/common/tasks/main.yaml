@@ -1,0 +1,24 @@
+---
+- name: Installl comon router system packages
+  apt: 
+   name={{ item }} 
+   state=latest
+  with_items:
+      - mc
+      - nano
+      - rsyslog
+      - iputils-ping
+      - iptraf-ng
+      - bridge-utils
+      - vlan
+      - traceroute
+      - tcpdump
+      - nftables
+      - lsof
+      - isc-dhcp-server
+      - iptables
+      - ifupdown
+      - ethtool
+      - cpufrequtils
+      - collectd
+      - collectd-utils

@@ -1,0 +1,55 @@
+#!/bin/bash
+
+ifnames=$(ifquery -l)
+cpucount=$(( $(nproc) -1 ))
+for iface in ${ifnames[@]}; do
+    irqdir="/sys/class/net/${iface}/device/msi_irqs/"
+    if [ -d "$irqdir" ]; then
+    echo $iface
+    (let CPU=0; cd $irqdir;  
+
+         for IRQ in *; do
+	 if [ "$CPU" -gt  "$cpucount" ]; then
+	    CPU=0
+	 fi
+	    mask=$(( 1 << ${CPU}))
+	    cpuindex=
+	    hex=$(printf "%x\n" $mask)
+	    info="IRQ ${IRQ} -> CPU ${CPU} -> Mask = ${mask} => Hex ${hex} "
+            echo "$mask" > /proc/irq/$IRQ/smp_affinity
+	    irqout=$(cat /proc/irq/$IRQ/smp_affinity)
+	    #echo "0-${cpucount}"> /proc/irq/$IRQ/smp_affinity_list
+	    echo "${CPU}"> /proc/irq/$IRQ/smp_affinity_list
+	    afflist=$(cat /proc/irq/$IRQ/smp_affinity_list)
+            let CPU+=1
+
+	    echo ${info} ${irqout} ${afflist}
+         done)
+
+    fi
+done
+
+echo
+echo ==============VERIFY READ==================
+echo
+for iface in ${ifnames[@]}; do
+    irqdir="/sys/class/net/${iface}/device/msi_irqs/"
+    if [ -d "$irqdir" ]; then
+    echo $iface
+    (let CPU=0; cd $irqdir;  
+         for IRQ in *; do
+	    mask=$(( 1 << ${CPU}))
+	    cpuindex=
+	    hex=$(printf "%x\n" $mask)
+	    info="IRQ ${IRQ} -> CPU ${CPU} -> Mask = ${mask} => Hex ${hex} "
+            #echo "$mask" > /proc/irq/$IRQ/smp_affinity
+	    irqout=$(cat /proc/irq/$IRQ/smp_affinity)
+	    #echo "0-${cpucount}"> /proc/irq/$IRQ/smp_affinity_list
+	    afflist=$(cat /proc/irq/$IRQ/smp_affinity_list)
+            let CPU+=1
+
+	    echo ${info} ${irqout} ${afflist}
+         done)
+
+    fi
+done

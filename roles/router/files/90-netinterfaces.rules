@@ -1,0 +1,7 @@
+SUBSYSTEM=="net", KERNEL=="eth*.*" ACTION=="add", NAME="$kernel"
+SUBSYSTEM=="net", KERNEL=="vlan*" ACTION=="add", NAME="$kernel"
+SUBSYSTEM=="net", KERNEL=="*\.*" ACTION=="add", NAME="$kernel"
+
+
+
+

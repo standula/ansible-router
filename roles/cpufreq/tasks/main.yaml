@@ -1,0 +1,30 @@
+---
+- name: Install CPU frequency packages
+  apt: name={{ item }} state=latest
+  with_items: 
+   - cpufrequtils
+   - sysfsutils
+
+- name: Installing governor
+  template: 
+    src: cpufrequtils.j2
+    dest: /etc/default/cpufrequtils
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Installing governor schema
+  template: 
+    src: sysfs.conf.j2
+    dest: /etc/sysfs.conf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Restarting CPU and SYSFS services
+  service: 
+    name: "{{ item }}" 
+    state: restarted
+  with_items:
+    - cpufrequtils
+    - sysfsutils

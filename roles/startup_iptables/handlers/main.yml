@@ -1,0 +1,13 @@
+---
+
+- name: system-startup start
+  service: 
+    name: system-starup 
+    state: started
+
+- name: system-startup stop
+  service: 
+    name: system-starup 
+    state: stopped
+
+

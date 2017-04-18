@@ -1,0 +1,42 @@
+---
+
+
+- name: "Testing dummy module" 
+  command: bash -c  "lsmod | grep ^dummy | wc -l"
+  register: dummy_module_loaded
+
+- name: "Installing {{ dummy_interfaces_count }} dummy interfaces"
+  template:
+    src: dummy_interfaces.j2
+    dest: /etc/modprobe.d/dummy_interfaces.conf
+    owner: root
+    group: root
+    mode: 0600
+  register: dummy_state
+
+- name: "Permanent load dummy module on system boot"
+  lineinfile:
+    dest: /etc/modules
+    line: 'dummy'
+
+- name: "Loading dummy module"
+  debug:
+    msg: "Loading dummy module with {{ dummy_interfaces_count }} interfaces" 
+  notify:
+    - load dummy module
+  when: dummy_module_loaded.stdout == "0"
+  changed_when: dummy_module_loaded.stdout == "0"
+
+
+- name: "Reloading dummy module"
+  debug: 
+    msg: "Reloading dummy module with {{ dummy_interfaces_count }} interfaces" 
+  notify:
+    - reload dummy module
+  when:
+   - dummy_module_loaded.stdout == "1" # "Check if module is loaded"
+   - dummy_state.changed == true # Reload only if number is changed
+  changed_when: 
+   - dummy_module_loaded.stdout == "1"
+
+

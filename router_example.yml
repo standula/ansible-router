@@ -1,0 +1,66 @@
+---
+- hosts: router_tab
+  remote_user: root
+  gather_facts: true
+  vars:
+    # First we define the data structure with the interface(s). It is the same
+    # data scructure used by the 'network_interface' role with the difference
+    # that only the 'device' and the 'hwaddr' params are required.
+    network_ether_interfaces:
+     - device: eth0
+       hwaddr: 0c:c4:7a:da:b8:f2
+       description: "Interface short description"
+     - device: eth1
+       hwaddr: 0c:c4:7a:da:b8:f3
+       description: "Interface short description"
+     - device: eth2
+       hwaddr: a0:36:9f:0e:06:d7
+       description: "Interface short description"
+     - device: sfp1
+       hwaddr: 00:1b:21:8d:46:28
+       description: "Interface short description"
+     - device: sfp2
+       hwaddr: 00:1b:21:8d:46:29
+       description: "Interface short description"
+     - device: wan
+       hwaddr: a0:36:9f:0e:06:d6
+       description: "Interface short description - eth4"
+     
+    bird_ospf_areas: 
+
+     - name: backbone
+       id: 0.0.0.0
+       networks: 
+        - address: 1.1.1.0/29
+        - address: 1.1.2.0/24
+       interfaces: 
+        - name: eth2
+          cost: 5
+          type: broadcast
+          password: MyOSPF Password
+          authentication: cryptographic
+                                   
+
+     - name: area1
+       id: 0.0.0.200
+       networks:
+         - address: 2.2.2.0/24
+      interfaces: 
+         - name: sfp1
+           cost: 5
+           type: broadcast
+        - name: eth2
+           cost: 5
+           type: broadcast
+
+  roles:
+  - common
+  - router
+  - role: udev_rename_netiface
+  - unsupported_sfpp_ixgbe
+  - {role: dummy_interfaces, dummy_interfaces_count: 4 }
+  - {role: bird_ospf, bird_ospf_router_id: "1.1.1.1" }
+  - {role: cpufreq, cpu_governor: powersave }
+  - {role: startup_scripts }
+  - {role: startup_iptables }
+  - {role: nic_affinity }

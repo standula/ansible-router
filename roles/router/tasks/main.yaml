@@ -1,0 +1,22 @@
+---
+- name: Install network interface udev rewrite rules - enabling vlan|eth names
+  copy:
+    src: 90-netinterfaces.rules
+    dest: /etc/udev/rules.d/90-netinterfaces.rules
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Enabling IPv4 forwaring betwen interfaces
+  sysctl:
+   name: net.ipv4.ip_forward
+   value: 1
+   reload: yes
+   state: present
+   
+- name: Enabling IPv6 forwaring betwen interfaces
+  sysctl:
+   name: net.ipv6.conf.all.forwarding
+   value: 1
+   reload: yes
+   state: present

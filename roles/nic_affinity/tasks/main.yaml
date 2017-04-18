@@ -1,0 +1,9 @@
+---
+- name: Install NIC affinity startup script
+  template:
+    src: nic_affinity.sh.j2
+    dest: /etc/startup/nic_affinity.sh
+    owner: root
+    group: root
+    mode: 0700
+#  notify: system-startup

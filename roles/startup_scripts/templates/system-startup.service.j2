@@ -1,0 +1,12 @@
+[Unit]
+Description=Systemp startup init scripts
+After=local-fs.target network.target
+Requires=local-fs.target network.target
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=/usr/bin/system-startup.sh
+Restart=on-failure
+
+

@@ -1,0 +1,36 @@
+---
+- name: Install system startup script
+  template:
+    src: system-startup.sh.j2
+    dest: /etc/init.d/system-startup.sh
+    owner: root
+    group: root
+    mode: 0751
+
+- name: Install system service file
+  template:
+    src: system-startup.service.j2
+    dest: /etc/systemd/system/system-startup.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install system service script
+  template:
+    src: bin.system-startup.sh.j2
+    dest: /usr/bin/system-startup.sh
+    owner: root
+    group: root
+    mode: 0700
+
+
+- name: Create system startup scripts workspace
+  file:
+    path: /etc/startup
+    mode: 0700
+    state: directory
+
+- name: enable system startup scripts service
+  service: 
+     name: system-startup 
+     enabled: yes

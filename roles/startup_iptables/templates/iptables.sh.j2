@@ -1,0 +1,35 @@
+#! /bin/sh
+
+IPTables=/sbin/iptables
+
+modprobe ip_conntrack_ftp
+
+#Vyprazdneni vsech tabulek
+$IPTables -F INPUT
+$IPTables -F OUTPUT
+$IPTables -F FORWARD
+$IPTables -F -t nat
+
+$IPTables -A INPUT -i lo -j ACCEPT # povoleni loopbacku
+
+$IPTables -P INPUT ACCEPT
+$IPTables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+$IPTables -P OUTPUT ACCEPT
+$IPTables -P FORWARD ACCEPT
+
+######################### PORTY PRO SSH ######################################
+$IPTables -A INPUT -p TCP --dport 22 -j ACCEPT #
+
+######################### PORTY PRO NTP ######################################
+$IPTables -A INPUT -p TCP --dport 123 -j ACCEPT # !Povoleni pouze z LAN
+$IPTables -A INPUT -p UDP --dport 123 -j ACCEPT # !Povoleni pouze z LAN
+
+######################### PORTY PRO WWW ######################################
+$IPTables -A INPUT -p TCP --dport 80  -j ACCEPT # HTTP
+
+######################### PORTY PRO ICMP #####################################
+$IPTables -A INPUT -p ICMP --icmp-type 0 -j ACCEPT  # Echo reply
+$IPTables -A INPUT -p ICMP --icmp-type 3 -j ACCEPT  # Destination unreachable
+$IPTables -A INPUT -p ICMP --icmp-type 8 -j ACCEPT  # Echo request
+$IPTables -A INPUT -p ICMP --icmp-type 11 -j ACCEPT # Time exceeded

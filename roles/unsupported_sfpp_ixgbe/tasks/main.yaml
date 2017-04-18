@@ -1,0 +1,9 @@
+---
+- name: Enabling unsupported SFP+ modules for Intel ixgbe driver
+  copy:
+    src: ixgbe.conf
+    dest: /etc/modprobe.d/ixgbe.conf
+    owner: root
+    group: root
+    mode: 0600
+

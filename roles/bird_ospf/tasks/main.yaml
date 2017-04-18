@@ -1,0 +1,16 @@
+---
+- name: Install bird system packages 
+  apt: 
+   name={{ item }}
+   state=latest
+  with_items:
+    - bird
+
+- name: Enabling bird OSPF configuration
+  template:
+    src: bird.j2
+    dest: /etc/bird/bird.conf
+    owner: bird
+    group: bird
+    mode: 0600
+  notify: bird restart
